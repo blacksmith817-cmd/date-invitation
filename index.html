@@ -259,13 +259,6 @@
 
     <textarea id="wishInput" placeholder="예) 분식 먹고 싶어요 🍢  카페도 가고 싶어요 ☕  산책도 해요 🌸"></textarea>
 
-    <!-- Formspree 폼 (숨김) -->
-    <form id="dateForm" action="https://formspree.io/f/FORM_ID_HERE" method="POST" style="display:none;">
-      <input type="hidden" name="날짜"      id="f_date">
-      <input type="hidden" name="시간"      id="f_time">
-      <input type="hidden" name="하고싶은것" id="f_wish">
-    </form>
-
     <div style="text-align:center;">
       <button class="btn btn-main" onclick="submitAll()">완성! 📬</button>
     </div>
@@ -382,32 +375,23 @@
   }
 
   /* ── Submit ── */
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzV59-NXMvbFInmKrPNQFs1pGWj20ZPU3uybz9Mk1BOpUEY7l94cQGD1ogNJjraMgoC/exec';
+
   function submitAll() {
     const startDay = 2;
     const dow = dowNames[(startDay + selectedDay - 1) % 7];
     const dateStr = `7월 ${selectedDay}일 (${dow})`;
     const wish    = document.getElementById('wishInput').value.trim() || '(없음)';
 
-    // 폼 데이터 채우기
-    document.getElementById('f_date').value = dateStr;
-    document.getElementById('f_time').value = selectedTime;
-    document.getElementById('f_wish').value = wish;
+    // 구글 시트에 저장
+    const params = new URLSearchParams({ '날짜': dateStr, '시간': selectedTime, '하고싶은것': wish });
+    fetch(SHEET_URL + '?' + params.toString(), { mode: 'no-cors' });
 
     // 요약 박스
     document.getElementById('summaryBox').innerHTML =
       `📅 <b>날짜</b> : ${dateStr}<br>` +
       `⏰ <b>시간</b> : ${selectedTime}<br>` +
       `✏️ <b>하고싶은 것</b> : ${wish}`;
-
-    // Formspree로 전송 (form ID가 설정된 경우에만)
-    const form = document.getElementById('dateForm');
-    if (!form.action.includes('FORM_ID_HERE')) {
-      fetch(form.action, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: { Accept: 'application/json' }
-      });
-    }
 
     goTo('screen4');
   }
