@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎬 영화관 데이트 신청 🎬</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Gaegu:wght@400;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Gaegu', 'Nanum Gothic', sans-serif;
+      background: linear-gradient(135deg, #ffe0f0 0%, #ffd6e7 50%, #ffb3d1 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 30px;
+      animation: fadeIn 0.6s ease;
+    }
+    .screen.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 30px;
+      padding: 50px 45px;
+      box-shadow: 0 8px 32px rgba(255,105,180,0.25);
+      max-width: 480px;
+      width: 100%;
+    }
+
+    .emoji-big { font-size: 72px; margin-bottom: 16px; display: block; animation: bounce 1.5s infinite; }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-12px); }
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #e05090;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    p {
+      font-size: 18px;
+      color: #c06080;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    /* ── Buttons ── */
+    .btn-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    .btn {
+      font-family: 'Gaegu', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      padding: 14px 42px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+    .btn:active { transform: scale(0.96); }
+
+    .btn-yes { background: linear-gradient(135deg, #ff6eb4, #ff2d78); color: #fff; }
+    .btn-no  { background: #fff0f5; color: #e05090; border: 2px solid #ffb3d1; }
+
+    /* ── No message ── */
+    .no-msg {
+      display: none;
+      margin-top: 18px;
+      font-size: 20px;
+      color: #e05090;
+      animation: shake 0.4s;
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25%      { transform: translateX(-8px); }
+      75%      { transform: translateX(8px); }
+    }
+
+    /* ── Calendar ── */
+    .calendar { width: 100%; margin-bottom: 24px; }
+    .cal-header {
+      font-size: 24px;
+      color: #e05090;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    .cal-day-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #c06080;
+      padding: 4px 0;
+    }
+    .cal-day-name.sun { color: #ff4d6d; }
+    .cal-day-name.sat { color: #4d79ff; }
+
+    .cal-cell {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      color: #333;
+      transition: background 0.15s, transform 0.15s;
+      user-select: none;
+    }
+    .cal-cell:hover:not(.empty):not(.past) { background: #ffe0f0; transform: scale(1.15); }
+    .cal-cell.empty { pointer-events: none; }
+    .cal-cell.past  { color: #ccc; pointer-events: none; }
+    .cal-cell.sun   { color: #ff4d6d; }
+    .cal-cell.sat   { color: #4d79ff; }
+    .cal-cell.selected {
+      background: linear-gradient(135deg, #ff6eb4, #ff2d78);
+      color: #fff !important;
+      font-weight: 700;
+    }
+    .cal-cell.today { border: 2px solid #ff6eb4; }
+
+    .selected-date-text {
+      font-size: 18px;
+      color: #e05090;
+      min-height: 26px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Textarea ── */
+    textarea {
+      font-family: 'Gaegu', sans-serif;
+      font-size: 18px;
+      width: 100%;
+      height: 130px;
+      border: 2px solid #ffb3d1;
+      border-radius: 16px;
+      padding: 14px 16px;
+      resize: none;
+      outline: none;
+      color: #333;
+      background: #fff9fc;
+      transition: border 0.2s;
+      margin-bottom: 20px;
+    }
+    textarea:focus { border-color: #ff6eb4; }
+    textarea::placeholder { color: #ffb3d1; }
+
+    /* ── Complete screen ── */
+    .confetti-row { font-size: 36px; margin-bottom: 16px; letter-spacing: 6px; animation: spin 2s linear infinite; }
+    @keyframes spin {
+      0%   { letter-spacing: 6px; }
+      50%  { letter-spacing: 14px; }
+      100% { letter-spacing: 6px; }
+    }
+
+    .step-dots { display: flex; gap: 10px; justify-content: center; margin-bottom: 28px; }
+    .dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: #ffb3d1;
+      transition: background 0.3s;
+    }
+    .dot.active { background: #ff2d78; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1 : 영화관 데이트 신청
+══════════════════════════════════════ -->
+<div id="screen1" class="screen active">
+  <div class="card">
+    <div class="step-dots">
+      <div class="dot active" id="d1"></div>
+      <div class="dot" id="d2"></div>
+      <div class="dot" id="d3"></div>
+    </div>
+
+    <span class="emoji-big">🎬</span>
+    <h1>나랑 영화관<br>데이트 할래?</h1>
+    <p>팝콘이랑 같이 보면<br>더 재밌을 것 같아서 💕</p>
+
+    <div class="btn-row">
+      <button class="btn btn-yes" onclick="goToScreen2()">💗 Yes!</button>
+      <button class="btn btn-no"  onclick="showNoMsg()">🙅 No..</button>
+    </div>
+    <div class="no-msg" id="noMsg">🥺 다시 생각해봐.. 응?</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2 : 7월 캘린더
+══════════════════════════════════════ -->
+<div id="screen2" class="screen">
+  <div class="card">
+    <div class="step-dots">
+      <div class="dot" id="d1b"></div>
+      <div class="dot active" id="d2b"></div>
+      <div class="dot" id="d3b"></div>
+    </div>
+
+    <span class="emoji-big">📅</span>
+    <h1>언제가 좋아?</h1>
+    <p>7월 달력에서 날짜를 골라줘 🌸</p>
+
+    <div class="calendar">
+      <div class="cal-header">🌷 2025년 7월 🌷</div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+
+    <div class="selected-date-text" id="selectedDateText">날짜를 골라줘 🩷</div>
+    <button class="btn btn-yes" id="nextBtn2" onclick="goToScreen3()" style="opacity:0.4;pointer-events:none;">다음으로 →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3 : 하고싶은 것 입력
+══════════════════════════════════════ -->
+<div id="screen3" class="screen">
+  <div class="card">
+    <div class="step-dots">
+      <div class="dot" id="d1c"></div>
+      <div class="dot" id="d2c"></div>
+      <div class="dot active" id="d3c"></div>
+    </div>
+
+    <span class="emoji-big">✏️</span>
+    <h1>뭐 하고 싶어?</h1>
+    <p>영화 말고 더 하고 싶은 것도<br>뭐든지 적어줘 🥰</p>
+
+    <textarea id="wishInput" placeholder="예) 분식 먹고 싶어요 🍢  카페도 가고 싶어요 ☕  같이 산책도 해요 🌸"></textarea>
+
+    <button class="btn btn-yes" onclick="goToComplete()">완성! 💌</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 4 : 완료
+══════════════════════════════════════ -->
+<div id="screen4" class="screen">
+  <div class="card">
+    <div class="confetti-row">🎉🩷🎊</div>
+    <span class="emoji-big" style="animation:none; font-size:80px;">💌</span>
+    <h1>전달됐어! 🥳</h1>
+    <p id="summaryText" style="margin-bottom:10px;"></p>
+    <p style="font-size:16px; color:#c06080;">기다리고 있을게 💕</p>
+  </div>
+</div>
+
+<script>
+  /* ── Screen navigation ── */
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function goToScreen2() { buildCalendar(); showScreen('screen2'); }
+
+  function showNoMsg() {
+    const msg = document.getElementById('noMsg');
+    msg.style.display = 'block';
+    msg.style.animation = 'none';
+    void msg.offsetWidth;           // reflow to restart animation
+    msg.style.animation = 'shake 0.4s';
+  }
+
+  /* ── Calendar ── */
+  let selectedDay = null;
+
+  function buildCalendar() {
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+
+    const dayNames = ['일','월','화','수','목','금','토'];
+    dayNames.forEach((n, i) => {
+      const el = document.createElement('div');
+      el.className = 'cal-day-name' + (i===0?' sun': i===6?' sat':'');
+      el.textContent = n;
+      grid.appendChild(el);
+    });
+
+    // July 2025: starts on Tuesday (index 2)
+    const startDay = 2;   // 0=Sun … 6=Sat
+    const totalDays = 31;
+
+    for (let i = 0; i < startDay; i++) {
+      const blank = document.createElement('div');
+      blank.className = 'cal-cell empty';
+      grid.appendChild(blank);
+    }
+
+    for (let d = 1; d <= totalDays; d++) {
+      const cell = document.createElement('div');
+      const dayOfWeek = (startDay + d - 1) % 7;
+      let cls = 'cal-cell';
+      if (dayOfWeek === 0) cls += ' sun';
+      if (dayOfWeek === 6) cls += ' sat';
+      cell.className = cls;
+      cell.textContent = d;
+      cell.addEventListener('click', () => selectDay(d, cell));
+      grid.appendChild(cell);
+    }
+  }
+
+  function selectDay(d, cell) {
+    document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('selected'));
+    cell.classList.add('selected');
+    selectedDay = d;
+
+    const dayNames = ['일','월','화','수','목','금','토'];
+    const startDay = 2;
+    const dow = dayNames[(startDay + d - 1) % 7];
+    document.getElementById('selectedDateText').textContent = `✅ 7월 ${d}일 (${dow}) 선택됨 🩷`;
+
+    const btn = document.getElementById('nextBtn2');
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+  }
+
+  function goToScreen3() {
+    if (!selectedDay) return;
+    showScreen('screen3');
+  }
+
+  /* ── Complete ── */
+  function goToComplete() {
+    const wish = document.getElementById('wishInput').value.trim();
+    const startDay = 2;
+    const dayNames = ['일','월','화','수','목','금','토'];
+    const dow = dayNames[(startDay + selectedDay - 1) % 7];
+    let summary = `📅 7월 ${selectedDay}일 (${dow}) 영화관 데이트`;
+    if (wish) summary += `\n✏️ 하고 싶은 것: ${wish}`;
+    document.getElementById('summaryText').innerText = summary;
+    showScreen('screen4');
+  }
+</script>
+</body>
+</html>
