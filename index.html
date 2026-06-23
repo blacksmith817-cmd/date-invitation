@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎬 영화관 데이트 신청 🎬</title>
+  <title>🎬 영화관 데이트 신청</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Hi+Melody&family=Gaegu:wght@400;700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Gaegu:wght@400;700&display=swap');
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Gaegu', 'Nanum Gothic', sans-serif;
-      background: linear-gradient(135deg, #ffe0f0 0%, #ffd6e7 50%, #ffb3d1 100%);
+      font-family: 'Hi Melody', 'Gaegu', sans-serif;
+      background: linear-gradient(135deg, #fce4f3 0%, #f8d7f0 40%, #e8d5f5 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+      padding: 20px;
     }
 
     .screen {
@@ -24,71 +24,85 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      padding: 40px 30px;
-      animation: fadeIn 0.6s ease;
+      width: 100%;
+      animation: fadeUp 0.5s ease;
     }
     .screen.active { display: flex; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(30px); }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
     .card {
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(10px);
-      border-radius: 30px;
-      padding: 50px 45px;
-      box-shadow: 0 8px 32px rgba(255,105,180,0.25);
-      max-width: 480px;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(12px);
+      border-radius: 32px;
+      padding: 44px 40px;
+      box-shadow: 0 8px 36px rgba(180,80,180,0.18);
+      max-width: 500px;
       width: 100%;
     }
 
-    .emoji-big { font-size: 72px; margin-bottom: 16px; display: block; animation: bounce 1.5s infinite; }
-    @keyframes bounce {
-      0%,100% { transform: translateY(0); }
-      50%      { transform: translateY(-12px); }
+    /* step dots */
+    .step-dots { display: flex; gap: 10px; justify-content: center; margin-bottom: 26px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; background: #e8c8f0; transition: background 0.3s; }
+    .dot.active { background: #c060d0; }
+
+    /* emoji */
+    .emoji-big {
+      font-size: 72px;
+      display: block;
+      text-align: center;
+      margin-bottom: 14px;
+      animation: wobble 2s infinite;
+    }
+    @keyframes wobble {
+      0%,100% { transform: rotate(-5deg) scale(1); }
+      50%      { transform: rotate(5deg) scale(1.1); }
     }
 
     h1 {
-      font-size: 32px;
-      color: #e05090;
+      font-size: 30px;
+      color: #9b3ab5;
       margin-bottom: 10px;
-      line-height: 1.3;
+      text-align: center;
+      line-height: 1.4;
     }
     p {
-      font-size: 18px;
-      color: #c06080;
-      margin-bottom: 30px;
+      font-size: 17px;
+      color: #b060c0;
+      margin-bottom: 28px;
+      text-align: center;
       line-height: 1.6;
     }
 
-    /* ── Buttons ── */
-    .btn-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    /* buttons */
+    .btn-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
     .btn {
-      font-family: 'Gaegu', sans-serif;
-      font-size: 22px;
-      font-weight: 700;
-      padding: 14px 42px;
+      font-family: 'Hi Melody', 'Gaegu', sans-serif;
+      font-size: 20px;
+      padding: 13px 40px;
       border: none;
       border-radius: 50px;
       cursor: pointer;
       transition: transform 0.15s, box-shadow 0.15s;
     }
-    .btn:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
-    .btn:active { transform: scale(0.96); }
+    .btn:hover  { transform: scale(1.08); box-shadow: 0 6px 20px rgba(0,0,0,0.13); }
+    .btn:active { transform: scale(0.95); }
 
-    .btn-yes { background: linear-gradient(135deg, #ff6eb4, #ff2d78); color: #fff; }
-    .btn-no  { background: #fff0f5; color: #e05090; border: 2px solid #ffb3d1; }
+    .btn-main  { background: linear-gradient(135deg, #c060d0, #8b20b0); color: #fff; }
+    .btn-ghost { background: #f5eafa; color: #9b3ab5; border: 2px solid #dbb0ec; }
+    .btn-disabled { opacity: 0.38; pointer-events: none; }
 
-    /* ── No message ── */
+    /* no message */
     .no-msg {
       display: none;
       margin-top: 18px;
-      font-size: 20px;
-      color: #e05090;
+      font-size: 19px;
+      color: #9b3ab5;
+      text-align: center;
       animation: shake 0.4s;
     }
     @keyframes shake {
@@ -98,264 +112,304 @@
     }
 
     /* ── Calendar ── */
-    .calendar { width: 100%; margin-bottom: 24px; }
-    .cal-header {
-      font-size: 24px;
-      color: #e05090;
-      font-weight: 700;
-      margin-bottom: 16px;
-    }
-    .cal-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-    }
-    .cal-day-name {
-      font-size: 14px;
-      font-weight: 700;
-      color: #c06080;
-      padding: 4px 0;
-    }
-    .cal-day-name.sun { color: #ff4d6d; }
-    .cal-day-name.sat { color: #4d79ff; }
+    .cal-header { font-size: 22px; color: #9b3ab5; font-weight: 700; text-align: center; margin-bottom: 14px; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 10px; }
+
+    .cal-day-name { font-size: 13px; font-weight: 700; color: #b060c0; text-align: center; padding: 3px 0; }
+    .cal-day-name.sun { color: #e04060; }
+    .cal-day-name.sat { color: #4060e0; }
 
     .cal-cell {
       aspect-ratio: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       border-radius: 50%;
-      font-size: 16px;
+      font-size: 15px;
       cursor: pointer;
       color: #333;
-      transition: background 0.15s, transform 0.15s;
+      transition: background 0.12s, transform 0.12s;
       user-select: none;
+      font-family: 'Fredoka', sans-serif;
     }
-    .cal-cell:hover:not(.empty):not(.past) { background: #ffe0f0; transform: scale(1.15); }
-    .cal-cell.empty { pointer-events: none; }
-    .cal-cell.past  { color: #ccc; pointer-events: none; }
-    .cal-cell.sun   { color: #ff4d6d; }
-    .cal-cell.sat   { color: #4d79ff; }
-    .cal-cell.selected {
-      background: linear-gradient(135deg, #ff6eb4, #ff2d78);
-      color: #fff !important;
-      font-weight: 700;
-    }
-    .cal-cell.today { border: 2px solid #ff6eb4; }
+    .cal-cell:hover:not(.empty) { background: #f0d8fa; transform: scale(1.15); }
+    .cal-cell.empty  { pointer-events: none; }
+    .cal-cell.sun    { color: #e04060; }
+    .cal-cell.sat    { color: #4060e0; }
+    .cal-cell.selected { background: linear-gradient(135deg, #c060d0, #8b20b0); color: #fff !important; font-weight: 700; }
 
-    .selected-date-text {
-      font-size: 18px;
-      color: #e05090;
-      min-height: 26px;
+    .selected-info { font-size: 17px; color: #9b3ab5; min-height: 24px; text-align: center; margin: 10px 0 16px; }
+
+    /* ── Time selection ── */
+    .time-section {
+      display: none;
+      animation: fadeUp 0.4s ease;
+    }
+    .time-section.visible { display: block; }
+
+    .time-label { font-size: 18px; color: #9b3ab5; text-align: center; margin-bottom: 12px; }
+
+    .time-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
       margin-bottom: 16px;
     }
+    .time-btn {
+      font-family: 'Fredoka', 'Hi Melody', sans-serif;
+      font-size: 15px;
+      padding: 9px 4px;
+      border: 2px solid #dbb0ec;
+      border-radius: 14px;
+      background: #f9f0fe;
+      color: #9b3ab5;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.12s, transform 0.12s;
+      user-select: none;
+    }
+    .time-btn:hover   { background: #f0d8fa; transform: scale(1.07); }
+    .time-btn.selected-t { background: linear-gradient(135deg, #c060d0, #8b20b0); color: #fff; border-color: transparent; }
 
     /* ── Textarea ── */
     textarea {
-      font-family: 'Gaegu', sans-serif;
-      font-size: 18px;
+      font-family: 'Hi Melody', 'Gaegu', sans-serif;
+      font-size: 17px;
       width: 100%;
       height: 130px;
-      border: 2px solid #ffb3d1;
+      border: 2px solid #dbb0ec;
       border-radius: 16px;
       padding: 14px 16px;
       resize: none;
       outline: none;
       color: #333;
-      background: #fff9fc;
+      background: #fdf8ff;
       transition: border 0.2s;
       margin-bottom: 20px;
     }
-    textarea:focus { border-color: #ff6eb4; }
-    textarea::placeholder { color: #ffb3d1; }
+    textarea:focus  { border-color: #c060d0; }
+    textarea::placeholder { color: #d0a0e0; }
 
     /* ── Complete screen ── */
-    .confetti-row { font-size: 36px; margin-bottom: 16px; letter-spacing: 6px; animation: spin 2s linear infinite; }
-    @keyframes spin {
-      0%   { letter-spacing: 6px; }
-      50%  { letter-spacing: 14px; }
-      100% { letter-spacing: 6px; }
+    .star-row { font-size: 34px; text-align: center; margin-bottom: 14px; letter-spacing: 8px; }
+    .summary-box {
+      background: #fdf4ff;
+      border: 2px dashed #dbb0ec;
+      border-radius: 18px;
+      padding: 18px 22px;
+      text-align: left;
+      font-size: 17px;
+      color: #7a2090;
+      line-height: 1.9;
+      margin-bottom: 20px;
     }
-
-    .step-dots { display: flex; gap: 10px; justify-content: center; margin-bottom: 28px; }
-    .dot {
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      background: #ffb3d1;
-      transition: background 0.3s;
-    }
-    .dot.active { background: #ff2d78; }
   </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     SCREEN 1 : 영화관 데이트 신청
-══════════════════════════════════════ -->
+<!-- ══════════════════════════ SCREEN 1 ══════════════════════════ -->
 <div id="screen1" class="screen active">
   <div class="card">
-    <div class="step-dots">
-      <div class="dot active" id="d1"></div>
-      <div class="dot" id="d2"></div>
-      <div class="dot" id="d3"></div>
-    </div>
+    <div class="step-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
 
     <span class="emoji-big">🎬</span>
     <h1>나랑 영화관<br>데이트 할래?</h1>
-    <p>팝콘이랑 같이 보면<br>더 재밌을 것 같아서 💕</p>
+    <p>같이 보면 더 재밌을 것 같아서 🍿</p>
 
     <div class="btn-row">
-      <button class="btn btn-yes" onclick="goToScreen2()">💗 Yes!</button>
-      <button class="btn btn-no"  onclick="showNoMsg()">🙅 No..</button>
+      <button class="btn btn-main" onclick="goTo('screen2')">✨ Yes!</button>
+      <button class="btn btn-ghost" onclick="showNoMsg()">🙅 No..</button>
     </div>
     <div class="no-msg" id="noMsg">🥺 다시 생각해봐.. 응?</div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     SCREEN 2 : 7월 캘린더
-══════════════════════════════════════ -->
+<!-- ══════════════════════════ SCREEN 2 ══════════════════════════ -->
 <div id="screen2" class="screen">
   <div class="card">
-    <div class="step-dots">
-      <div class="dot" id="d1b"></div>
-      <div class="dot active" id="d2b"></div>
-      <div class="dot" id="d3b"></div>
-    </div>
+    <div class="step-dots"><div class="dot"></div><div class="dot active"></div><div class="dot"></div></div>
 
     <span class="emoji-big">📅</span>
     <h1>언제가 좋아?</h1>
-    <p>7월 달력에서 날짜를 골라줘 🌸</p>
+    <p>날짜랑 시간도 골라줘 🌸</p>
 
-    <div class="calendar">
-      <div class="cal-header">🌷 2025년 7월 🌷</div>
-      <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-header">🍬 2025년 7월 🍬</div>
+    <div class="cal-grid" id="calGrid"></div>
+
+    <div class="selected-info" id="selectedInfo">날짜를 먼저 골라줘~</div>
+
+    <!-- 시간 선택 (날짜 고르면 나타남) -->
+    <div class="time-section" id="timeSection">
+      <div class="time-label">⏰ 몇 시에 만날까?</div>
+      <div class="time-grid" id="timeGrid"></div>
     </div>
 
-    <div class="selected-date-text" id="selectedDateText">날짜를 골라줘 🩷</div>
-    <button class="btn btn-yes" id="nextBtn2" onclick="goToScreen3()" style="opacity:0.4;pointer-events:none;">다음으로 →</button>
+    <div style="text-align:center;">
+      <button class="btn btn-main btn-disabled" id="nextBtn2" onclick="goTo('screen3')">다음으로 →</button>
+    </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     SCREEN 3 : 하고싶은 것 입력
-══════════════════════════════════════ -->
+<!-- ══════════════════════════ SCREEN 3 ══════════════════════════ -->
 <div id="screen3" class="screen">
   <div class="card">
-    <div class="step-dots">
-      <div class="dot" id="d1c"></div>
-      <div class="dot" id="d2c"></div>
-      <div class="dot active" id="d3c"></div>
-    </div>
+    <div class="step-dots"><div class="dot"></div><div class="dot"></div><div class="dot active"></div></div>
 
     <span class="emoji-big">✏️</span>
     <h1>뭐 하고 싶어?</h1>
     <p>영화 말고 더 하고 싶은 것도<br>뭐든지 적어줘 🥰</p>
 
-    <textarea id="wishInput" placeholder="예) 분식 먹고 싶어요 🍢  카페도 가고 싶어요 ☕  같이 산책도 해요 🌸"></textarea>
+    <textarea id="wishInput" placeholder="예) 분식 먹고 싶어요 🍢  카페도 가고 싶어요 ☕  산책도 해요 🌸"></textarea>
 
-    <button class="btn btn-yes" onclick="goToComplete()">완성! 💌</button>
+    <!-- Formspree 폼 (숨김) -->
+    <form id="dateForm" action="https://formspree.io/f/FORM_ID_HERE" method="POST" style="display:none;">
+      <input type="hidden" name="날짜"      id="f_date">
+      <input type="hidden" name="시간"      id="f_time">
+      <input type="hidden" name="하고싶은것" id="f_wish">
+    </form>
+
+    <div style="text-align:center;">
+      <button class="btn btn-main" onclick="submitAll()">완성! 📬</button>
+    </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     SCREEN 4 : 완료
-══════════════════════════════════════ -->
+<!-- ══════════════════════════ SCREEN 4 ══════════════════════════ -->
 <div id="screen4" class="screen">
   <div class="card">
-    <div class="confetti-row">🎉🩷🎊</div>
-    <span class="emoji-big" style="animation:none; font-size:80px;">💌</span>
-    <h1>전달됐어! 🥳</h1>
-    <p id="summaryText" style="margin-bottom:10px;"></p>
-    <p style="font-size:16px; color:#c06080;">기다리고 있을게 💕</p>
+    <div class="star-row">🎊 ✨ 🎊</div>
+    <span class="emoji-big" style="animation:none;">🎉</span>
+    <h1>신청 완료!</h1>
+
+    <div class="summary-box" id="summaryBox"></div>
+
+    <p style="font-size:15px; color:#b060c0; margin-bottom:0;">기다리고 있을게 🌟</p>
   </div>
 </div>
 
 <script>
-  /* ── Screen navigation ── */
-  function showScreen(id) {
+  let selectedDay  = null;
+  let selectedTime = null;
+
+  /* ── Screen nav ── */
+  function goTo(id) {
+    if (id === 'screen2') buildCalendar();
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   }
 
-  function goToScreen2() { buildCalendar(); showScreen('screen2'); }
-
+  /* ── Screen 1 ── */
   function showNoMsg() {
-    const msg = document.getElementById('noMsg');
-    msg.style.display = 'block';
-    msg.style.animation = 'none';
-    void msg.offsetWidth;           // reflow to restart animation
-    msg.style.animation = 'shake 0.4s';
+    const m = document.getElementById('noMsg');
+    m.style.display = 'block';
+    m.style.animation = 'none';
+    void m.offsetWidth;
+    m.style.animation = 'shake 0.4s';
   }
 
   /* ── Calendar ── */
-  let selectedDay = null;
-
   function buildCalendar() {
+    if (document.getElementById('calGrid').children.length) return;
     const grid = document.getElementById('calGrid');
-    grid.innerHTML = '';
-
-    const dayNames = ['일','월','화','수','목','금','토'];
-    dayNames.forEach((n, i) => {
+    ['일','월','화','수','목','금','토'].forEach((n, i) => {
       const el = document.createElement('div');
       el.className = 'cal-day-name' + (i===0?' sun': i===6?' sat':'');
       el.textContent = n;
       grid.appendChild(el);
     });
 
-    // July 2025: starts on Tuesday (index 2)
-    const startDay = 2;   // 0=Sun … 6=Sat
-    const totalDays = 31;
-
+    const startDay = 2; // July 2025 starts on Tuesday
     for (let i = 0; i < startDay; i++) {
-      const blank = document.createElement('div');
-      blank.className = 'cal-cell empty';
-      grid.appendChild(blank);
+      const b = document.createElement('div');
+      b.className = 'cal-cell empty';
+      grid.appendChild(b);
     }
-
-    for (let d = 1; d <= totalDays; d++) {
+    for (let d = 1; d <= 31; d++) {
       const cell = document.createElement('div');
-      const dayOfWeek = (startDay + d - 1) % 7;
-      let cls = 'cal-cell';
-      if (dayOfWeek === 0) cls += ' sun';
-      if (dayOfWeek === 6) cls += ' sat';
-      cell.className = cls;
+      const dow = (startDay + d - 1) % 7;
+      cell.className = 'cal-cell' + (dow===0?' sun': dow===6?' sat':'');
       cell.textContent = d;
-      cell.addEventListener('click', () => selectDay(d, cell));
+      cell.addEventListener('click', () => selectDay(d, cell, dow));
       grid.appendChild(cell);
     }
   }
 
-  function selectDay(d, cell) {
+  const dowNames = ['일','월','화','수','목','금','토'];
+
+  function selectDay(d, cell, dow) {
     document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('selected'));
     cell.classList.add('selected');
-    selectedDay = d;
+    selectedDay  = d;
+    selectedTime = null;
 
-    const dayNames = ['일','월','화','수','목','금','토'];
+    document.getElementById('selectedInfo').textContent = `✅ 7월 ${d}일 (${dowNames[dow]}) 선택됨`;
+
+    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected-t'));
+    document.getElementById('timeSection').classList.add('visible');
+    updateNextBtn();
+
+    if (!document.getElementById('timeGrid').children.length) buildTimeGrid();
+  }
+
+  function buildTimeGrid() {
+    const times = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00'];
+    const grid = document.getElementById('timeGrid');
+    times.forEach(t => {
+      const btn = document.createElement('div');
+      btn.className = 'time-btn';
+      btn.textContent = t;
+      btn.addEventListener('click', () => selectTime(t, btn));
+      grid.appendChild(btn);
+    });
+  }
+
+  function selectTime(t, btn) {
+    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected-t'));
+    btn.classList.add('selected-t');
+    selectedTime = t;
+
     const startDay = 2;
-    const dow = dayNames[(startDay + d - 1) % 7];
-    document.getElementById('selectedDateText').textContent = `✅ 7월 ${d}일 (${dow}) 선택됨 🩷`;
+    const dow = dowNames[(startDay + selectedDay - 1) % 7];
+    document.getElementById('selectedInfo').textContent = `✅ 7월 ${selectedDay}일 (${dow}) ${t}`;
+    updateNextBtn();
+  }
 
+  function updateNextBtn() {
     const btn = document.getElementById('nextBtn2');
-    btn.style.opacity = '1';
-    btn.style.pointerEvents = 'auto';
+    if (selectedDay && selectedTime) {
+      btn.classList.remove('btn-disabled');
+    } else {
+      btn.classList.add('btn-disabled');
+    }
   }
 
-  function goToScreen3() {
-    if (!selectedDay) return;
-    showScreen('screen3');
-  }
-
-  /* ── Complete ── */
-  function goToComplete() {
-    const wish = document.getElementById('wishInput').value.trim();
+  /* ── Submit ── */
+  function submitAll() {
     const startDay = 2;
-    const dayNames = ['일','월','화','수','목','금','토'];
-    const dow = dayNames[(startDay + selectedDay - 1) % 7];
-    let summary = `📅 7월 ${selectedDay}일 (${dow}) 영화관 데이트`;
-    if (wish) summary += `\n✏️ 하고 싶은 것: ${wish}`;
-    document.getElementById('summaryText').innerText = summary;
-    showScreen('screen4');
+    const dow = dowNames[(startDay + selectedDay - 1) % 7];
+    const dateStr = `7월 ${selectedDay}일 (${dow})`;
+    const wish    = document.getElementById('wishInput').value.trim() || '(없음)';
+
+    // 폼 데이터 채우기
+    document.getElementById('f_date').value = dateStr;
+    document.getElementById('f_time').value = selectedTime;
+    document.getElementById('f_wish').value = wish;
+
+    // 요약 박스
+    document.getElementById('summaryBox').innerHTML =
+      `📅 <b>날짜</b> : ${dateStr}<br>` +
+      `⏰ <b>시간</b> : ${selectedTime}<br>` +
+      `✏️ <b>하고싶은 것</b> : ${wish}`;
+
+    // Formspree로 전송 (form ID가 설정된 경우에만)
+    const form = document.getElementById('dateForm');
+    if (!form.action.includes('FORM_ID_HERE')) {
+      fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' }
+      });
+    }
+
+    goTo('screen4');
   }
 </script>
 </body>
